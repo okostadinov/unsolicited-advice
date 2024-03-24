@@ -19,6 +19,8 @@ export async function getUsers() {
 
 export async function createUser(username: string, password: string) {
   await fakeNetwork("");
+  let existingUser = await getUserByName(username);
+  if (existingUser) return false;
 
   let id = Math.random().toString(36).substring(2, 9);
   let passwordHash = "test";
@@ -26,14 +28,30 @@ export async function createUser(username: string, password: string) {
   let users = await getUsers();
   users.push(user);
   await set(users);
-  return user;
+  return true;
 }
 
-export async function getUser(id: string) {
+export async function getUserByName(username: string) {
+  await fakeNetwork(`user:${username}`);
+  let users = await getUsers();
+  let user = users?.find((user) => user.username === username);
+  return user ?? null;
+}
+
+export async function getUserById(id: string) {
   await fakeNetwork(`user:${id}`);
-  let users = await localforage.getItem<User[]>("users");
+  let users = await getUsers();
   let user = users?.find((user) => user.id === id);
   return user ?? null;
+}
+
+export async function userExists(username: string, password: string) {
+  await fakeNetwork(`user:${username}`);
+  let users = await getUsers();
+  let user = users?.find((user) => user.username === username);
+  if (!user) return false;
+
+  return true;
 }
 
 function set(users: User[]) {

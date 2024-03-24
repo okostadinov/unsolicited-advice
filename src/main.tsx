@@ -6,6 +6,7 @@ import Root from "./routes/root.tsx";
 import ErrorPage from "./components/error-page.tsx";
 import Login from "./routes/login.tsx";
 import Register from "./routes/register.tsx";
+import { loginAction, registerAction } from "./components/user-form.tsx";
 
 const router = createBrowserRouter([
   {
@@ -16,10 +17,12 @@ const router = createBrowserRouter([
       {
         path: "/login",
         element: <Login />,
+        action: loginAction,
       },
       {
         path: "/Register",
         element: <Register />,
+        action: registerAction,
       },
     ],
   },
