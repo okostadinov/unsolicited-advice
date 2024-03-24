@@ -1,4 +1,5 @@
 import localforage from "localforage";
+import bcrypt from "bcryptjs";
 
 type FakeCache = {
   [key: string]: boolean;
@@ -10,48 +11,44 @@ type User = {
   passwordHash: string;
 };
 
-export async function getUsers() {
+export async function registerUser(username: string, password: string) {
+  await fakeNetwork("");
+  let existingUser = await getUserByName(username);
+  if (existingUser) throw new Error("User with this name already exists");
+
+  let id = Math.random().toString(36).substring(2, 9);
+  let passwordHash = await bcrypt.hash(password, 8);
+  let user: User = { id, username, passwordHash };
+
+  let users = await getUsers();
+  users.push(user);
+  await set(users);
+
+  return user;
+}
+
+export async function loginUser(username: string, password: string) {
+  await fakeNetwork(`user:${username}`);
+  let existingUser = await getUserByName(username);
+  if (!existingUser) throw new Error("Invalid username or password");
+
+  let result = await bcrypt.compare(password, existingUser.passwordHash);
+  if (!result) throw new Error("Invalid username or password");
+  return true;
+}
+
+async function getUsers() {
   await fakeNetwork("");
   let users = await localforage.getItem<User[]>("users");
   if (!users) users = [];
   return users;
 }
 
-export async function createUser(username: string, password: string) {
-  await fakeNetwork("");
-  let existingUser = await getUserByName(username);
-  if (existingUser) return false;
-
-  let id = Math.random().toString(36).substring(2, 9);
-  let passwordHash = "test";
-  let user = { id, username, passwordHash } as User;
-  let users = await getUsers();
-  users.push(user);
-  await set(users);
-  return true;
-}
-
-export async function getUserByName(username: string) {
+async function getUserByName(username: string) {
   await fakeNetwork(`user:${username}`);
   let users = await getUsers();
   let user = users?.find((user) => user.username === username);
-  return user ?? null;
-}
-
-export async function getUserById(id: string) {
-  await fakeNetwork(`user:${id}`);
-  let users = await getUsers();
-  let user = users?.find((user) => user.id === id);
-  return user ?? null;
-}
-
-export async function userExists(username: string, password: string) {
-  await fakeNetwork(`user:${username}`);
-  let users = await getUsers();
-  let user = users?.find((user) => user.username === username);
-  if (!user) return false;
-
-  return true;
+  return user;
 }
 
 function set(users: User[]) {

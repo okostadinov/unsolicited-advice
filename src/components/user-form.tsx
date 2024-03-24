@@ -1,6 +1,17 @@
 import { ChangeEvent, useState } from "react";
-import { ActionFunction, Form, redirect } from "react-router-dom";
-import { createUser, userExists } from "../services/user";
+import {
+  ActionFunction,
+  Form,
+  redirect,
+  useActionData,
+} from "react-router-dom";
+import { registerUser, loginUser } from "../services/user";
+import {
+  UserFormErrors,
+  getErrors,
+  validUserForm,
+  validateUserForm,
+} from "../utils/validate";
 
 type UserFormType = "Register" | "Login";
 
@@ -10,33 +21,41 @@ interface UserFormProps {
 
 export const registerAction: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
-  const username = formData.get("username");
-  const password = formData.get("password");
+  const username = formData.get("username") as string;
+  const password = formData.get("password") as string;
 
-  if (!username || !password) return null;
+  validateUserForm(username, password);
+  if (!validUserForm()) return getErrors();
 
-  let created = await createUser(username as string, password as string);
-
-  if (!created) throw new Error("User with this name already exists");
+  try {
+    await registerUser(username, password);
+  } catch (e) {
+    throw e;
+  }
 
   return redirect(`/login`);
 };
 
 export const loginAction: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
-  const username = formData.get("username");
-  const password = formData.get("password");
+  const username = formData.get("username") as string;
+  const password = formData.get("password") as string;
 
-  if (!username || !password) return null;
+  validateUserForm(username, password);
+  if (!validUserForm()) return getErrors();
 
-  let exists = await userExists(username as string, password as string);
-
-  if (!exists) throw new Error("Invalid username or password");
+  try {
+    await loginUser(username as string, password as string);
+  } catch (e) {
+    throw e;
+  }
 
   return redirect(`/login`);
 };
 
 const UserForm = ({ userFormType }: UserFormProps) => {
+  const errors = useActionData() as UserFormErrors;
+
   const [input, setInput] = useState({
     username: "",
     password: "",
@@ -63,6 +82,7 @@ const UserForm = ({ userFormType }: UserFormProps) => {
             onChange={handleInput}
           />
         </label>
+        {errors?.username && <p className="error">{errors.username}</p>}
       </div>
       <div>
         <label>
@@ -74,6 +94,7 @@ const UserForm = ({ userFormType }: UserFormProps) => {
             onChange={handleInput}
           />
         </label>
+        {errors?.username && <p className="error">{errors.password}</p>}
       </div>
       <button type="submit">{userFormType}</button>
     </Form>
