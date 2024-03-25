@@ -4,42 +4,60 @@ import "./index.css";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import Root from "./routes/root.tsx";
 import ErrorPage from "./components/error-page.tsx";
-import Login from "./routes/login.tsx";
-import Register from "./routes/register.tsx";
-import { loginAction, registerAction } from "./components/user-form.tsx";
+import Login, { loginAction } from "./routes/login.tsx";
+import Register, { registerAction } from "./routes/register.tsx";
 import Index from "./routes/index.tsx";
-import { AuthProvider } from "./utils/auth.tsx";
+import { AuthProvider, useAuth } from "./utils/auth.tsx";
+import { ExcludeAuth, RequireAuth } from "./components/auth-discriminator.tsx";
 
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <Root />,
-    errorElement: <ErrorPage />,
-    children: [
-      {
-        index: true,
-        element: <Index />,
-      },
-      {
-        path: "/login",
-        element: <Login />,
-        action: loginAction,
-        errorElement: <ErrorPage />,
-      },
-      {
-        path: "/register",
-        element: <Register />,
-        action: registerAction,
-        errorElement: <ErrorPage />,
-      },
-    ],
-  },
-]);
+const App = () => {
+  const authContext = useAuth();
+
+  const router = createBrowserRouter([
+    {
+      path: "/",
+      element: <Root />,
+      errorElement: <ErrorPage />,
+      children: [
+        {
+          index: true,
+          element: (
+            <RequireAuth>
+              <Index />
+            </RequireAuth>
+          ),
+        },
+        {
+          path: "/login",
+          element: (
+            <ExcludeAuth>
+              <Login />
+            </ExcludeAuth>
+          ),
+          action: loginAction(authContext),
+          errorElement: <ErrorPage />,
+        },
+        {
+          path: "/register",
+          element: (
+            <ExcludeAuth>
+              <Register />
+            </ExcludeAuth>
+          ),
+          action: registerAction,
+          errorElement: <ErrorPage />,
+        },
+      ],
+    },
+  ]);
+
+  return <RouterProvider router={router} />;
+};
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <AuthProvider>
-      <RouterProvider router={router} />
+      <App />
     </AuthProvider>
   </React.StrictMode>
 );

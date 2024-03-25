@@ -23,8 +23,6 @@ export async function registerUser(username: string, password: string) {
   let users = await getUsers();
   users.push(user);
   await set(users);
-
-  return user;
 }
 
 export async function loginUser(username: string, password: string) {
