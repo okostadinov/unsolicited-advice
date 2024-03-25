@@ -7,6 +7,7 @@ import ErrorPage from "./components/error-page.tsx";
 import Login from "./routes/login.tsx";
 import Register from "./routes/register.tsx";
 import { loginAction, registerAction } from "./components/user-form.tsx";
+import Index from "./routes/index.tsx";
 
 const router = createBrowserRouter([
   {
@@ -15,13 +16,17 @@ const router = createBrowserRouter([
     errorElement: <ErrorPage />,
     children: [
       {
+        index: true,
+        element: <Index />,
+      },
+      {
         path: "/login",
         element: <Login />,
         action: loginAction,
         errorElement: <ErrorPage />,
       },
       {
-        path: "/Register",
+        path: "/register",
         element: <Register />,
         action: registerAction,
         errorElement: <ErrorPage />,

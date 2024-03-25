@@ -50,7 +50,7 @@ export const loginAction: ActionFunction = async ({ request }) => {
     throw e;
   }
 
-  return redirect(`/login`);
+  return redirect(`/`);
 };
 
 const UserForm = ({ userFormType }: UserFormProps) => {
