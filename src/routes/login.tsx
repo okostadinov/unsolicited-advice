@@ -1,10 +1,5 @@
 import { ChangeEvent, useState } from "react";
-import {
-  UserFormErrors,
-  getErrors,
-  validUserForm,
-  validateUserForm,
-} from "../utils/validate";
+import { getErrors, validUserForm, validateUserForm } from "../utils/validate";
 import { loginUser } from "../services/user";
 import { AuthContextType } from "../utils/auth";
 import {
@@ -14,6 +9,10 @@ import {
   redirect,
   useActionData,
 } from "react-router-dom";
+import {
+  UserFormDatabaseErrors,
+  UserFormValidationErrors,
+} from "../utils/errors";
 
 interface LoginFormInterface {
   username: string;
@@ -37,12 +36,15 @@ export const loginAction =
         return redirect("/");
       }
     } catch (e) {
-      throw e;
+      if (e instanceof Error)
+        return { message: e.message } as UserFormDatabaseErrors;
+      return { message: String(e) };
     }
   };
 
 const Login = () => {
-  const errors = useActionData() as UserFormErrors;
+  const validationErrors = useActionData() as UserFormValidationErrors;
+  const databaseErrors = useActionData() as UserFormDatabaseErrors;
 
   const [input, setInput] = useState<LoginFormInterface>({
     username: "",
@@ -61,6 +63,7 @@ const Login = () => {
     <>
       <Form method="POST">
         <h1>Login</h1>
+        {databaseErrors && <p className="error">{databaseErrors.message}</p>}
         <div>
           <label>
             Username{" "}
@@ -71,7 +74,7 @@ const Login = () => {
               onChange={handleInput}
             />
           </label>
-          {errors?.username && <p className="error">{errors.username}</p>}
+          {validationErrors?.username && <p className="error">{validationErrors.username}</p>}
         </div>
         <div>
           <label>
@@ -83,7 +86,7 @@ const Login = () => {
               onChange={handleInput}
             />
           </label>
-          {errors?.password && <p className="error">{errors.password}</p>}
+          {validationErrors?.password && <p className="error">{validationErrors.password}</p>}
         </div>
         <button type="submit">Login</button>
       </Form>

@@ -1,10 +1,6 @@
-export interface UserFormErrors {
-  username: string;
-  password: string;
-  confirmPassword?: string;
-}
+import { UserFormValidationErrors } from "./errors";
 
-const errors: UserFormErrors = {
+const errors: UserFormValidationErrors = {
   username: "",
   password: "",
   confirmPassword: "",
@@ -12,7 +8,7 @@ const errors: UserFormErrors = {
 
 export const getErrors = () => errors;
 
-export const validateUserForm = (props: UserFormErrors) => {
+export const validateUserForm = (props: UserFormValidationErrors) => {
   clearErrors();
   const { username, password, confirmPassword } = props;
   validateUsername(username);
@@ -52,7 +48,7 @@ const validateConfirmPassword = (password: string, confirmPassword: string) => {
 };
 
 const clearErrors = () => {
-  (Object.keys(errors) as Array<keyof UserFormErrors>).forEach((key) => {
+  (Object.keys(errors) as Array<keyof UserFormValidationErrors>).forEach((key) => {
     errors[key] = "";
   });
 };

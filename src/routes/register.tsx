@@ -6,13 +6,12 @@ import {
   useActionData,
 } from "react-router-dom";
 import { ChangeEvent, useState } from "react";
-import {
-  UserFormErrors,
-  getErrors,
-  validUserForm,
-  validateUserForm,
-} from "../utils/validate";
+import { getErrors, validUserForm, validateUserForm } from "../utils/validate";
 import { registerUser } from "../services/user";
+import {
+  UserFormDatabaseErrors,
+  UserFormValidationErrors,
+} from "../utils/errors";
 
 interface RegisterFormInterface {
   username: string;
@@ -32,14 +31,17 @@ export const registerAction: ActionFunction = async ({ request }) => {
   try {
     await registerUser(username, password);
   } catch (e) {
-    throw e;
+    if (e instanceof Error)
+      return { message: e.message } as UserFormDatabaseErrors;
+    return { message: String(e) };
   }
 
   return redirect(`/login`);
 };
 
 const Register = () => {
-  const errors = useActionData() as UserFormErrors;
+  const validationErrors = useActionData() as UserFormValidationErrors;
+  const databaseErrors = useActionData() as UserFormDatabaseErrors;
 
   const [input, setInput] = useState<RegisterFormInterface>({
     username: "",
@@ -59,6 +61,7 @@ const Register = () => {
     <>
       <Form method="POST">
         <h1>Register</h1>
+        {databaseErrors && <p className="error">{databaseErrors.message}</p>}
         <div>
           <label>
             Username{" "}
@@ -69,7 +72,9 @@ const Register = () => {
               onChange={handleInput}
             />
           </label>
-          {errors?.username && <p className="error">{errors.username}</p>}
+          {validationErrors?.username && (
+            <p className="error">{validationErrors.username}</p>
+          )}
         </div>
         <div>
           <label>
@@ -81,7 +86,9 @@ const Register = () => {
               onChange={handleInput}
             />
           </label>
-          {errors?.password && <p className="error">{errors.password}</p>}
+          {validationErrors?.password && (
+            <p className="error">{validationErrors.password}</p>
+          )}
         </div>
         <div>
           <label>
@@ -93,8 +100,8 @@ const Register = () => {
               onChange={handleInput}
             />
           </label>
-          {errors?.confirmPassword && (
-            <p className="error">{errors.confirmPassword}</p>
+          {validationErrors?.confirmPassword && (
+            <p className="error">{validationErrors.confirmPassword}</p>
           )}
         </div>
         <button type="submit">Register</button>
