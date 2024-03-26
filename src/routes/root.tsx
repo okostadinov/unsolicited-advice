@@ -7,7 +7,7 @@ const Root = () => {
     <>
       <Alert />
       <Navbar/>
-      <main className="bg-slate-100">
+      <main className="bg-slate-100 flex-1 h-full">
         <Outlet />
       </main>
     </>
