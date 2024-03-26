@@ -6,8 +6,8 @@ const Root = () => {
   return (
     <>
       <Alert />
-      <Navbar />
-      <main>
+      <Navbar/>
+      <main className="bg-slate-100">
         <Outlet />
       </main>
     </>

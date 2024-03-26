@@ -19,6 +19,7 @@ This is a web app purposed to unnecessarily require users to go through authenti
 * React
 * React Router
 * Localforage
+* Tailwind CSS
 
 ## Requirements
 
