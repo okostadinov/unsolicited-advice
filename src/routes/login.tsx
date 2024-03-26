@@ -1,7 +1,7 @@
 import { ChangeEvent, useState } from "react";
 import { getErrors, validUserForm, validateUserForm } from "../utils/validate";
 import { loginUser } from "../services/user";
-import { AuthContextType } from "../utils/auth";
+import { AuthContextInterface } from "../utils/auth";
 import {
   ActionFunction,
   Form,
@@ -13,6 +13,8 @@ import {
   UserFormDatabaseErrors,
   UserFormValidationErrors,
 } from "../utils/errors";
+import { AlertContextInterface } from "../utils/alert";
+import { AlertType } from "../components/alert-dialog";
 
 interface LoginFormInterface {
   username: string;
@@ -20,7 +22,10 @@ interface LoginFormInterface {
 }
 
 export const loginAction =
-  (authContext: AuthContextType): ActionFunction =>
+  (
+    authContext: AuthContextInterface,
+    alertContext: AlertContextInterface
+  ): ActionFunction =>
   async ({ request }) => {
     const formData = await request.formData();
     const username = formData.get("username") as string;
@@ -33,6 +38,10 @@ export const loginAction =
       let loggedIn = await loginUser(username as string, password as string);
       if (loggedIn) {
         authContext.login({ username, isLogged: true });
+        alertContext.setAlert({
+          message: "Successfully logged in!",
+          type: AlertType.Success,
+        });
         return redirect("/");
       }
     } catch (e) {
@@ -74,7 +83,9 @@ const Login = () => {
               onChange={handleInput}
             />
           </label>
-          {validationErrors?.username && <p className="error">{validationErrors.username}</p>}
+          {validationErrors?.username && (
+            <p className="error">{validationErrors.username}</p>
+          )}
         </div>
         <div>
           <label>
@@ -86,7 +97,9 @@ const Login = () => {
               onChange={handleInput}
             />
           </label>
-          {validationErrors?.password && <p className="error">{validationErrors.password}</p>}
+          {validationErrors?.password && (
+            <p className="error">{validationErrors.password}</p>
+          )}
         </div>
         <button type="submit">Login</button>
       </Form>

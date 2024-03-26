@@ -12,6 +12,8 @@ import {
   UserFormDatabaseErrors,
   UserFormValidationErrors,
 } from "../utils/errors";
+import { AlertContextInterface } from "../utils/alert";
+import { AlertType } from "../components/alert-dialog";
 
 interface RegisterFormInterface {
   username: string;
@@ -19,25 +21,31 @@ interface RegisterFormInterface {
   confirmPassword: string;
 }
 
-export const registerAction: ActionFunction = async ({ request }) => {
-  const formData = await request.formData();
-  const username = formData.get("username") as string;
-  const password = formData.get("password") as string;
-  const confirmPassword = formData.get("confirmPassword") as string;
+export const registerAction =
+  (alertContext: AlertContextInterface): ActionFunction =>
+  async ({ request }) => {
+    const formData = await request.formData();
+    const username = formData.get("username") as string;
+    const password = formData.get("password") as string;
+    const confirmPassword = formData.get("confirmPassword") as string;
 
-  validateUserForm({ username, password, confirmPassword });
-  if (!validUserForm()) return getErrors();
+    validateUserForm({ username, password, confirmPassword });
+    if (!validUserForm()) return getErrors();
 
-  try {
-    await registerUser(username, password);
-  } catch (e) {
-    if (e instanceof Error)
-      return { message: e.message } as UserFormDatabaseErrors;
-    return { message: String(e) };
-  }
+    try {
+      await registerUser(username, password);
+      alertContext.setAlert({
+        message: "Successfully registed! You may log in now.",
+        type: AlertType.Success,
+      });
+    } catch (e) {
+      if (e instanceof Error)
+        return { message: e.message } as UserFormDatabaseErrors;
+      return { message: String(e) };
+    }
 
-  return redirect(`/login`);
-};
+    return redirect(`/login`);
+  };
 
 const Register = () => {
   const validationErrors = useActionData() as UserFormValidationErrors;

@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState } from "react";
 
-export interface AuthContextType {
+export interface AuthContextInterface {
   user: UserContextType;
   login: (user: UserContextType) => void;
   logout: () => void;
@@ -15,7 +15,7 @@ interface AuthProviderProps {
   children: React.ReactNode;
 }
 
-const AuthContext = createContext<AuthContextType>({} as AuthContextType);
+const AuthContext = createContext<AuthContextInterface>({} as AuthContextInterface);
 
 export const AuthProvider = (props: AuthProviderProps) => {
   const [user, setUser] = useState<UserContextType>({

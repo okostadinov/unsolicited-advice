@@ -9,9 +9,11 @@ import Register, { registerAction } from "./routes/register.tsx";
 import Index from "./routes/index.tsx";
 import { AuthProvider, useAuth } from "./utils/auth.tsx";
 import { ExcludeAuth, RequireAuth } from "./components/auth-discriminator.tsx";
+import { AlertProvider, useAlert } from "./utils/alert.tsx";
 
 const App = () => {
   const authContext = useAuth();
+  const alertContext = useAlert();
 
   const router = createBrowserRouter([
     {
@@ -34,7 +36,7 @@ const App = () => {
               <Login />
             </ExcludeAuth>
           ),
-          action: loginAction(authContext),
+          action: loginAction(authContext, alertContext),
           errorElement: <ErrorPage />,
         },
         {
@@ -44,7 +46,7 @@ const App = () => {
               <Register />
             </ExcludeAuth>
           ),
-          action: registerAction,
+          action: registerAction(alertContext),
           errorElement: <ErrorPage />,
         },
       ],
@@ -57,7 +59,9 @@ const App = () => {
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <AuthProvider>
-      <App />
+      <AlertProvider>
+        <App />
+      </AlertProvider>
     </AuthProvider>
   </React.StrictMode>
 );

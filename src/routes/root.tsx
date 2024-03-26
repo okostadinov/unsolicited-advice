@@ -1,12 +1,16 @@
 import { Outlet } from "react-router-dom";
 import Navbar from "../components/navbar";
+import Alert from "../components/alert-dialog";
 
 const Root = () => {
   return (
-    <main>
+    <>
+      <Alert />
       <Navbar />
-      <Outlet />
-    </main>
+      <main>
+        <Outlet />
+      </main>
+    </>
   );
 };
 
