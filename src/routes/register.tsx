@@ -6,14 +6,11 @@ import {
   useActionData,
 } from "react-router-dom";
 import { ChangeEvent, useState } from "react";
-import { getErrors, validUserForm, validateUserForm } from "../utils/validate";
 import { registerUser } from "../services/user";
-import {
-  UserFormDatabaseErrors,
-  UserFormValidationErrors,
-} from "../utils/errors";
+import { NonFieldErrors, ValidationErrors } from "../utils/errors";
 import { AlertContextInterface } from "../utils/alert";
 import { AlertType } from "../components/alert-dialog";
+import Validator from "../utils/validator";
 
 interface RegisterFormInterface {
   username: string;
@@ -29,8 +26,9 @@ export const registerAction =
     const password = formData.get("password") as string;
     const confirmPassword = formData.get("confirmPassword") as string;
 
-    validateUserForm({ username, password, confirmPassword });
-    if (!validUserForm()) return getErrors();
+    const validator = new Validator();
+    validator.validate({ username, password, confirmPassword });
+    if (!validator.isValid()) return validator.errors;
 
     try {
       await registerUser(username, password);
@@ -39,8 +37,7 @@ export const registerAction =
         type: AlertType.Success,
       });
     } catch (e) {
-      if (e instanceof Error)
-        return { message: e.message } as UserFormDatabaseErrors;
+      if (e instanceof Error) return { message: e.message } as NonFieldErrors;
       return { message: String(e) };
     }
 
@@ -48,8 +45,8 @@ export const registerAction =
   };
 
 const Register = () => {
-  const validationErrors = useActionData() as UserFormValidationErrors;
-  const databaseErrors = useActionData() as UserFormDatabaseErrors;
+  const validationErrors = useActionData() as ValidationErrors;
+  const nonFieldErrors = useActionData() as NonFieldErrors;
 
   const [input, setInput] = useState<RegisterFormInterface>({
     username: "",
@@ -69,7 +66,7 @@ const Register = () => {
     <>
       <Form method="POST">
         <h1>Register</h1>
-        {databaseErrors && <p className="error">{databaseErrors.message}</p>}
+        {nonFieldErrors && <p className="error">{nonFieldErrors.message}</p>}
         <div>
           <label>
             Username{" "}

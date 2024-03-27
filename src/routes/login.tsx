@@ -1,5 +1,4 @@
 import { ChangeEvent, useState } from "react";
-import { getErrors, validUserForm, validateUserForm } from "../utils/validate";
 import { loginUser } from "../services/user";
 import { AuthContextInterface } from "../utils/auth";
 import {
@@ -10,11 +9,12 @@ import {
   useActionData,
 } from "react-router-dom";
 import {
-  UserFormDatabaseErrors,
-  UserFormValidationErrors,
+  NonFieldErrors,
+  ValidationErrors,
 } from "../utils/errors";
 import { AlertContextInterface } from "../utils/alert";
 import { AlertType } from "../components/alert-dialog";
+import Validator from "../utils/validator";
 
 interface LoginFormInterface {
   username: string;
@@ -31,8 +31,9 @@ export const loginAction =
     const username = formData.get("username") as string;
     const password = formData.get("password") as string;
 
-    validateUserForm({ username, password });
-    if (!validUserForm()) return getErrors();
+    const validator = new Validator();
+    validator.validate({ username, password });
+    if (!validator.isValid()) return validator.errors;
 
     try {
       let loggedIn = await loginUser(username as string, password as string);
@@ -46,14 +47,14 @@ export const loginAction =
       }
     } catch (e) {
       if (e instanceof Error)
-        return { message: e.message } as UserFormDatabaseErrors;
+        return { message: e.message } as NonFieldErrors;
       return { message: String(e) };
     }
   };
 
 const Login = () => {
-  const validationErrors = useActionData() as UserFormValidationErrors;
-  const databaseErrors = useActionData() as UserFormDatabaseErrors;
+  const validationErrors = useActionData() as ValidationErrors;
+  const nonFieldErrors = useActionData() as NonFieldErrors;
 
   const [input, setInput] = useState<LoginFormInterface>({
     username: "",
@@ -72,7 +73,7 @@ const Login = () => {
     <>
       <Form method="POST">
         <h1>Login</h1>
-        {databaseErrors && <p className="error">{databaseErrors.message}</p>}
+        {nonFieldErrors && <p className="error">{nonFieldErrors.message}</p>}
         <div>
           <label>
             Username{" "}

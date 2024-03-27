@@ -8,10 +8,10 @@ This is a web app purposed to unnecessarily require users to go through authenti
 ## Features
 
 * Client-side routing and authorization
-* User authentication using a local storage
+* Locally stored users for simplicity's sake
 * Protected routes for logged-in users
+* Client-side extendable form validations
 * Alert and auth context for managing state
-* Client-side form validations
 
 ## Tools used
 

@@ -1,9 +1,9 @@
-export interface UserFormValidationErrors {
-  username: string;
-  password: string;
+export interface ValidationErrors {
+  username?: string;
+  password?: string;
   confirmPassword?: string;
 }
 
-export interface UserFormDatabaseErrors {
+export interface NonFieldErrors {
   message: string;
 }
