@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { useAlert } from "../utils/alert";
 
 export enum AlertType {
@@ -28,32 +29,31 @@ const alertTypeStyles = {
 
 const Alert = () => {
   const { alert } = useAlert();
+  const [open, setOpen] = useState(false);
 
-  const closeDialog = () => {
-    let dialog = document.getElementById("alert-dialog") as HTMLDialogElement;
-    dialog && dialog.close();
-  };
+  useEffect(() => {
+    setOpen(Boolean(alert.message));
+  }, [alert]);
+
   return (
-    alert.message && (
-      <dialog
-        open
-        className={`top-20 py-4 px-6 border rounded ${
-          alertTypeStyles[alert.type].dialog
+    <dialog
+      open={open}
+      className={`top-2 py-4 px-6 border rounded ${
+        alertTypeStyles[alert.type].dialog
+      }`}
+      id="alert-dialog"
+    >
+      <p
+        className={`inline-block font-serif font-medium text-xl mr-4 ${
+          alertTypeStyles[alert.type].message
         }`}
-        id="alert-dialog"
       >
-        <p
-          className={`inline-block font-serif font-medium text-xl mr-4 ${
-            alertTypeStyles[alert.type].message
-          }`}
-        >
-          {alert.message}
-        </p>
-        <button className="text-xl text-stone-600" onClick={closeDialog}>
-          &#x2715;
-        </button>
-      </dialog>
-    )
+        {alert.message}
+      </p>
+      <button className="text-xl text-stone-600" onClick={() => setOpen(false)}>
+        &#x2715;
+      </button>
+    </dialog>
   );
 };
 

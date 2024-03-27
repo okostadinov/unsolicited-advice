@@ -26,7 +26,7 @@ const AdviceGenerator = () => {
           type="submit"
           className="border-slate-700 px-3 py-2 rounded-md border text-xl text-stone-700 hover:bg-sky-50 hover:outline-2 hover:outline hover:outline-slate-400 transition ease-in-out delay-75"
         >
-          Get Advice
+          Generate Advice
         </button>
       </form>
       {advice !== "" && <p className="italic text-2xl text-stone-800 font-light font-serif">{advice}</p>}

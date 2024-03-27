@@ -8,10 +8,7 @@ import {
   redirect,
   useActionData,
 } from "react-router-dom";
-import {
-  NonFieldErrors,
-  ValidationErrors,
-} from "../utils/errors";
+import { NonFieldErrors, ValidationErrors } from "../utils/errors";
 import { AlertContextInterface } from "../utils/alert";
 import { AlertType } from "../components/alert-dialog";
 import Validator from "../utils/validator";
@@ -46,8 +43,7 @@ export const loginAction =
         return redirect("/");
       }
     } catch (e) {
-      if (e instanceof Error)
-        return { message: e.message } as NonFieldErrors;
+      if (e instanceof Error) return { message: e.message } as NonFieldErrors;
       return { message: String(e) };
     }
   };
@@ -70,44 +66,60 @@ const Login = () => {
   };
 
   return (
-    <>
-      <Form method="POST">
-        <h1>Login</h1>
-        {nonFieldErrors && <p className="error">{nonFieldErrors.message}</p>}
-        <div>
-          <label>
-            Username{" "}
-            <input
-              type="text"
-              name="username"
-              value={input.username}
-              onChange={handleInput}
-            />
+    <div className="flex flex-col gap-6 items-center p-10">
+      <h1 className="text-3xl font-semibold text-stone-800 font-serif">
+        Already Registered?
+      </h1>
+      <Form method="POST" className="flex flex-col gap-2 min-w-80">
+        {nonFieldErrors && (
+          <p className="text-red-800 font-semibold">{nonFieldErrors.message}</p>
+        )}
+        <div className="grid">
+          <label htmlFor="username" className="text-stone-800 text-lg">
+            Username
           </label>
+          <input
+            type="text"
+            id="username"
+            name="username"
+            value={input.username}
+            className="border-2 rounded border-slate-300 px-2 py-1"
+            onChange={handleInput}
+          />
           {validationErrors?.username && (
-            <p className="error">{validationErrors.username}</p>
+            <p className="text-red-800">{validationErrors.username}</p>
           )}
         </div>
-        <div>
-          <label>
-            Password{" "}
-            <input
-              type="password"
-              name="password"
-              value={input.password}
-              onChange={handleInput}
-            />
+        <div className="grid">
+          <label htmlFor="password" className="text-stone-800 text-lg">
+            Password
           </label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            value={input.password}
+            className="border-2 rounded border-slate-300 px-2 py-1"
+            onChange={handleInput}
+          />
           {validationErrors?.password && (
-            <p className="error">{validationErrors.password}</p>
+            <p className="text-red-800">{validationErrors.password}</p>
           )}
         </div>
-        <button type="submit">Login</button>
+        <button
+          type="submit"
+          className="border border-teal-100 rounded-md px-10 py-3 text-lg uppercase w-fit mx-auto bg-emerald-200 hover:bg-emerald-100 mt-4"
+        >
+          Login
+        </button>
       </Form>
       <p>
-        Don't have an account? <Link to={`../register`}>Register</Link>
+        Don't have an account?{" "}
+        <Link to={`../register`} className="text-blue-600 hover:text-blue-500">
+          Register
+        </Link>
       </p>
-    </>
+    </div>
   );
 };
 
