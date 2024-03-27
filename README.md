@@ -30,3 +30,4 @@ This is a web app purposed to unnecessarily require users to go through authenti
 * clone the project and navigate to it
 * `npm install`
 * `npm run dev`
+* open the [app in the browser](http://localhost:3000/)
