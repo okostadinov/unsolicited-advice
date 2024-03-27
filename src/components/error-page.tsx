@@ -16,10 +16,10 @@ export default function ErrorPage() {
   }
 
   return (
-    <div id="error-page">
-      <h1>Oops!</h1>
-      <p>Sorry, an unexpected error has occurred.</p>
-      <p>
+    <div className="bg-slate-100 flex-1 h-full p-20 flex flex-col justify-center items-center gap-6">
+      <h1 className="text-3xl font-semibold text-stone-800">Oh no!</h1>
+      <p className="text-xl text-stone-800">Sorry, an unexpected error has occurred.</p>
+      <p className="text-xl text-stone-800 font-mono font-medium">
         <i>{errorMessage}</i>
       </p>
     </div>
